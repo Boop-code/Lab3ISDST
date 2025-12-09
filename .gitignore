@@ -1,0 +1,22 @@
+# Build directories
+/build/
+.gradle/
+/out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Application configuration
+app.properties
+
+# Logs and temporary files
+*.log
+temp/
+tmp/
