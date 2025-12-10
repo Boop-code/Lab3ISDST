@@ -1,6 +1,5 @@
 package com.hodor.config;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,15 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Класс для загрузки и хранения конфигурации приложения из app.properties.
- * <p>
- * Поддерживаемые параметры:
- * <ul>
- *   <li>{@code scan.directory} — директория для сканирования</li>
- *   <li>{@code search.keyword} — ключевое слово для поиска</li>
- *   <li>{@code search.case.sensitive} — учитывать ли регистр</li>
- *   <li>{@code scan.file.extensions} — расширения файлов через запятую (например: .txt, .log)</li>
- * </ul>
+ * Класс для загрузки и хранения конфигурации приложения.
  */
 public class AppConfig {
 
@@ -28,66 +19,73 @@ public class AppConfig {
     private final Set<String> fileExtensions;
 
     /**
-     * Загружает конфигурацию из файла app.properties в classpath.
-     *
-     * @throws RuntimeException если файл конфигурации не найден или содержит ошибки
+     * Приватный конструктор — используется только внутренними методами.
      */
-    public AppConfig() {
-        Properties props = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("app.properties")) {
-            if (input == null) {
-                throw new RuntimeException("Файл конфигурации app.properties не найден в classpath");
-            }
-            props.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка при чтении app.properties", e);
-        }
-
-        this.scanDirectory = Paths.get(props.getProperty("scan.directory", "./data"));
-        this.keyword = props.getProperty("search.keyword", "");
-        if (this.keyword.isEmpty()) {
-            throw new RuntimeException("Параметр search.keyword не задан в app.properties");
-        }
-        this.caseSensitive = Boolean.parseBoolean(props.getProperty("search.case.sensitive", "false"));
-        String extensions = props.getProperty("scan.file.extensions", ".txt");
-        this.fileExtensions = Stream.of(extensions.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toSet());
+    private AppConfig(Path scanDirectory, String keyword, boolean caseSensitive, Set<String> fileExtensions) {
+        this.scanDirectory = scanDirectory;
+        this.keyword = keyword;
+        this.caseSensitive = caseSensitive;
+        this.fileExtensions = fileExtensions;
     }
 
     /**
-     * Возвращает путь к директории, которую необходимо сканировать.
+     * Загружает конфигурацию из app.properties в classpath.
      *
-     * @return путь к директории
+     * @return экземпляр AppConfig
+     * @throws RuntimeException если файл не найден или параметры некорректны
      */
+    public static AppConfig fromClasspath() {
+        Properties props = new Properties();
+        try (InputStream input = AppConfig.class.getClassLoader().getResourceAsStream("app.properties")) {
+            if (input == null) {
+                throw new RuntimeException("Файл app.properties не найден в classpath");
+            }
+            props.load(input);
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при загрузке app.properties", e);
+        }
+
+        Path dir = Paths.get(props.getProperty("scan.directory", "./data"));
+        String keyword = props.getProperty("search.keyword", "");
+        if (keyword.isEmpty()) {
+            throw new RuntimeException("Параметр search.keyword не задан");
+        }
+        boolean caseSensitive = Boolean.parseBoolean(props.getProperty("search.case.sensitive", "false"));
+        String exts = props.getProperty("scan.file.extensions", ".txt");
+        Set<String> extensions = Stream.of(exts.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+
+        return new AppConfig(dir, keyword, caseSensitive, extensions);
+    }
+
+    /**
+     * Создаёт конфигурацию из явно заданных значений (для тестов).
+     */
+    public static AppConfig of(Path scanDirectory, String keyword, boolean caseSensitive, String... extensions) {
+        return new AppConfig(
+                scanDirectory,
+                keyword,
+                caseSensitive,
+                Set.of(extensions)
+        );
+    }
+
+    // === Геттеры (без изменений) ===
+
     public Path getScanDirectory() {
         return scanDirectory;
     }
 
-    /**
-     * Возвращает ключевое слово, которое ищется в файлах.
-     *
-     * @return ключевое слово
-     */
     public String getKeyword() {
         return keyword;
     }
 
-    /**
-     * Возвращает флаг учёта регистра при поиске.
-     *
-     * @return {@code true}, если поиск чувствителен к регистру, иначе {@code false}
-     */
     public boolean isCaseSensitive() {
         return caseSensitive;
     }
 
-    /**
-     * Возвращает множество допустимых расширений файлов для сканирования.
-     *
-     * @return множество расширений (например: {".txt", ".log"})
-     */
     public Set<String> getFileExtensions() {
         return fileExtensions;
     }

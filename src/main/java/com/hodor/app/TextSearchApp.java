@@ -28,7 +28,7 @@ public class TextSearchApp {
     public static void main(String[] args) {
         try {
             // 1. Загрузка конфигурации
-            AppConfig config = new AppConfig();
+            AppConfig config = AppConfig.fromClasspath();
 
             // 2. Сканирование файлов
             FileScanner scanner = new FileScanner(config.getScanDirectory(), config.getFileExtensions());
