@@ -30,7 +30,7 @@ public class TextSearchApp {
             // 1. Загрузка конфигурации
             AppConfig config = AppConfig.fromClasspath();
 
-            // 2. Сканирование файлов
+            // 2. сканирование файлов
             FileScanner scanner = new FileScanner(config.getScanDirectory(), config.getFileExtensions());
             List<Path> files = scanner.scan();
 

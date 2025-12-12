@@ -14,7 +14,7 @@ public class TextSearcher {
     private final boolean caseSensitive;
 
     /**
-     * Создаёт экземпляр поиска.
+     * создаёт экземпляр поиска.
      *
      * @param keyword ключевое слово для поиска
      * @param caseSensitive флаг: true — учитывать регистр, false — игнорировать

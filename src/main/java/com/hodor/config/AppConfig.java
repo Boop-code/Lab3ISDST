@@ -61,7 +61,7 @@ public class AppConfig {
     }
 
     /**
-     * Создаёт конфигурацию из явно заданных значений (для тестов).
+     * создаёт конфигурацию из явно заданных значений (для тестов).
      */
     public static AppConfig of(Path scanDirectory, String keyword, boolean caseSensitive, String... extensions) {
         return new AppConfig(

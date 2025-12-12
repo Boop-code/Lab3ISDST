@@ -17,7 +17,7 @@ public class FileScanner {
     private final Set<String> allowedExtensions;
 
     /**
-     * Создаёт сканер файлов.
+     * создаёт сканер файлов.
      *
      * @param rootDirectory директория, с которой начинается рекурсивный обход
      * @param allowedExtensions множество разрешённых расширений файлов (например: {".txt", ".log"})
