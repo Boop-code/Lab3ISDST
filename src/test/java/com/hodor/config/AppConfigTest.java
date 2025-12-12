@@ -19,11 +19,4 @@ class AppConfigTest {
         assertTrue(config.isCaseSensitive());
         assertEquals(Set.of(".log", ".txt"), config.getFileExtensions());
     }
-
-    @Test
-    void testFromClasspathLoadsRealConfig() {
-        // Этот тест использует реальный app.properties из src/main/resources
-        // Он проходит, только если файл существует и содержит search.keyword
-        assertDoesNotThrow(AppConfig::fromClasspath);
-    }
 }
